@@ -1,0 +1,390 @@
+{
+    "widgets": [
+        {
+            "height": 6,
+            "width": 6,
+            "y": 4,
+            "x": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "RequestCountPerTarget", "TargetGroup", "targetgroup/managed-ecs-tg-2-backend-prod/c2347e81de4e145d", "LoadBalancer", "targetgroup/managed-ecs-tg-2-backend-prod/c2347e81de4e145d", { "region": "me-south-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "title": "Target Groups",
+                "period": 300,
+                "stat": "Average"
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 4,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "app/managed-alb-prod/251f95bb77692efc", { "region": "me-south-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "title": "TargetResponseTime",
+                "period": 300
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 4,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "RequestCountPerTarget", "TargetGroup", "targetgroup/managed-ecs-tg-2-backend-prod/c2347e81de4e145d", "LoadBalancer", "targetgroup/managed-ecs-tg-2-backend-prod/c2347e81de4e145d", { "region": "me-south-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "title": "RequestCountPerTarget",
+                "period": 300,
+                "stat": "Average"
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 4,
+            "x": 18,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "UnHealthyHostCount", "TargetGroup", "targetgroup/managed-ecs-tg-2-backend-prod/c2347e81de4e145d", "LoadBalancer", "targetgroup/managed-ecs-tg-2-backend-prod/c2347e81de4e145d", { "region": "me-south-1" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "eu-west-1",
+                "period": 300,
+                "stat": "Average",
+                "title": "UnHealthyHostCount"
+            }
+        },
+        {
+            "height": 7,
+            "width": 12,
+            "y": 11,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ECR", "RepositoryPullCount", "RepositoryName", "managed-backend", { "region": "me-south-1" } ]
+                ],
+                "view": "singleValue",
+                "stacked": true,
+                "region": "eu-west-1",
+                "stat": "Sum",
+                "period": 300
+            }
+        },
+        {
+            "height": 7,
+            "width": 12,
+            "y": 11,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/Usage", "CallCount", "Type", "API", "Resource", "CreateRepository", "Service", "ECR", "Class", "None", { "region": "me-south-1" } ]
+                ],
+                "view": "singleValue",
+                "stacked": false,
+                "region": "eu-west-1",
+                "stat": "Sum",
+                "period": 300
+            }
+        },
+        {
+            "height": 1,
+            "width": 24,
+            "y": 18,
+            "x": 0,
+            "type": "text",
+            "properties": {
+                "markdown": "# ECS"
+            }
+        },
+        {
+            "height": 1,
+            "width": 24,
+            "y": 0,
+            "x": 0,
+            "type": "text",
+            "properties": {
+                "markdown": "# ALB"
+            }
+        },
+        {
+            "height": 1,
+            "width": 24,
+            "y": 10,
+            "x": 0,
+            "type": "text",
+            "properties": {
+                "markdown": "# ECR"
+            }
+        },
+        {
+            "height": 1,
+            "width": 24,
+            "y": 25,
+            "x": 0,
+            "type": "text",
+            "properties": {
+                "markdown": "# RDS"
+            }
+        },
+        {
+            "height": 1,
+            "width": 24,
+            "y": 37,
+            "x": 0,
+            "type": "text",
+            "properties": {
+                "markdown": "# WAF"
+            }
+        },
+        {
+            "height": 3,
+            "width": 24,
+            "y": 1,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", "app/managed-alb-prod/251f95bb77692efc", { "region": "me-south-1" } ],
+                    [ ".", "HTTPCode_Target_4XX_Count", ".", ".", { "region": "me-south-1" } ],
+                    [ ".", "ActiveConnectionCount", ".", ".", { "region": "me-south-1" } ],
+                    [ ".", "HTTPCode_ELB_5XX_Count", ".", ".", { "region": "me-south-1" } ],
+                    [ ".", "HTTPCode_ELB_4XX_Count", ".", ".", { "region": "me-south-1" } ]
+                ],
+                "view": "singleValue",
+                "stacked": true,
+                "region": "eu-west-1",
+                "period": 300,
+                "stat": "Sum",
+                "title": "ActiveConnectionCount, HTTPCode_ELB_4XX_Count, HTTPCode_ELB_5XX_Count, HTTPCode_Target_4XX_Count, RequestCount",
+                "start": "-PT3H",
+                "end": "P0D"
+            }
+        },
+        {
+            "height": 11,
+            "width": 6,
+            "y": 26,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "managed-rds-db-prod", { "label": "involink-rds-db-prod", "region": "me-south-1" } ]
+                ],
+                "period": 300,
+                "region": "eu-west-1",
+                "stat": "Average",
+                "title": "CPUUtilization",
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                },
+                "view": "gauge",
+                "stacked": false,
+                "annotations": {
+                    "horizontal": [
+                        {
+                            "color": "#b2df8d",
+                            "label": "Untitled annotation",
+                            "value": 80,
+                            "fill": "below"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "height": 11,
+            "width": 6,
+            "y": 26,
+            "x": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "managed-rds-db-prod", { "label": "involink-rds-db-prod", "region": "me-south-1" } ]
+                ],
+                "sparkline": true,
+                "period": 300,
+                "region": "eu-west-1",
+                "stat": "Sum",
+                "title": "DatabaseConnections",
+                "yAxis": {
+                    "left": {
+                        "min": 0
+                    }
+                },
+                "view": "singleValue",
+                "stacked": true,
+                "liveData": false,
+                "singleValueFullPrecision": false,
+                "setPeriodToTimeRange": false,
+                "trend": true
+            }
+        },
+        {
+            "height": 4,
+            "width": 12,
+            "y": 33,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "FreeableMemory", "DBInstanceIdentifier", "managed-rds-db-prod", { "label": "involink-rds-db-prod", "region": "me-south-1" } ]
+                ],
+                "period": 300,
+                "region": "eu-west-1",
+                "stat": "Average",
+                "title": "FreeableMemory",
+                "yAxis": {
+                    "left": {
+                        "min": 0
+                    }
+                },
+                "view": "singleValue",
+                "stacked": false
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 19,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ECS", "CPUUtilization", "ServiceName", "managed-service-prod", "ClusterName", "managed-ecs-cluster-prod", { "stat": "Average", "region": "me-south-1" } ]
+                ],
+                "period": 300,
+                "region": "eu-west-1",
+                "stacked": false,
+                "title": "managed: CPU Utilization",
+                "view": "gauge",
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                },
+                "annotations": {
+                    "horizontal": [
+                        {
+                            "color": "#b2df8d",
+                            "label": "Acceptable Range",
+                            "value": 80,
+                            "fill": "below"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 19,
+            "x": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ "AWS/ECS", "MemoryUtilization", "ServiceName", "managed-service-prod", "ClusterName", "managed-ecs-cluster-prod", { "stat": "Average", "region": "me-south-1" } ]
+                ],
+                "period": 300,
+                "region": "eu-west-1",
+                "stacked": false,
+                "title": "managed: Memory Utilization",
+                "view": "gauge",
+                "yAxis": {
+                    "left": {
+                        "max": 100,
+                        "min": 0
+                    }
+                },
+                "annotations": {
+                    "horizontal": [
+                        {
+                            "color": "#b2df8d",
+                            "label": "Acceptable Range",
+                            "value": 80,
+                            "fill": "below"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "height": 7,
+            "width": 12,
+            "y": 38,
+            "x": 12,
+            "type": "log",
+            "properties": {
+                "query": "SOURCE 'aws-waf-logs-managed-WAF-log-group-prod' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 10000",
+                "queryLanguage": "CWLI",
+                "region": "me-south-1",
+                "title": "Log group: aws-waf-logs-managed-WAF-log-group-prod",
+                "view": "table"
+            }
+        },
+        {
+            "height": 7,
+            "width": 12,
+            "y": 38,
+            "x": 0,
+            "type": "log",
+            "properties": {
+                "query": "SOURCE 'aws-waf-logs-managed-WAF-log-group-prod' | fields @timestamp as Timestamp, action\n| stats count() as Action by action",
+                "region": "me-south-1",
+                "stacked": false,
+                "title": "Log group: managed-WAF-Actions",
+                "view": "table"
+            }
+        },
+        {
+            "type": "log",
+            "x": 12,
+            "y": 19,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "query": "SOURCE '/ecs/managed-app-prod' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 10000",
+                "queryLanguage": "CWLI",
+                "region": "me-south-1",
+                "title": "Log group: /ecs/managed-app-prod",
+                "view": "table"
+            }
+        },
+        {
+            "type": "log",
+            "x": 12,
+            "y": 26,
+            "width": 12,
+            "height": 7,
+            "properties": {
+                "query": "SOURCE '/aws/rds/instance/managed-rds-db-prod/postgresql' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 10000",
+                "queryLanguage": "CWLI",
+                "region": "me-south-1",
+                "title": "Log group: /aws/rds/instance/managed-rds-db-prod/postgresql",
+                "view": "table"
+            }
+        }
+    ]
+}

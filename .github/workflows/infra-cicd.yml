@@ -1,0 +1,112 @@
+name: Provision-Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".github/workflows/infra-cicd.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".github/workflows/infra-cicd.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: eu-west-1
+  TERRAFORM_VERSION: "1.14.8"
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+jobs:
+  static_code_checks:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -recursive -check
+        working-directory: ./terraform
+
+      - name: Terraform Init
+        run: terraform init -backend=false -no-color
+        working-directory: ./terraform
+
+      - name: Terraform Validate
+        run: terraform validate -no-color
+        working-directory: ./terraform
+
+  plan:
+    needs: [static_code_checks]
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          - poc
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_POC }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init -backend-config=backend/${{ matrix.environment }}.tfvars -reconfigure -no-color
+        working-directory: ./terraform
+
+      - name: Terraform Plan
+        run: |
+          terraform plan -out=tfplan -var-file=environment/${{ matrix.environment }}.tfvars -no-color
+          terraform show -no-color tfplan > plan.txt
+        working-directory: ./terraform
+
+      - name: Upload Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-${{ matrix.environment }}
+          path: ./terraform/plan.txt
+
+  apply:
+    needs: [plan]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    strategy:
+      max-parallel: 1
+      matrix:
+        environment:
+          - poc
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_POC }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform init -backend-config=backend/${{ matrix.environment }}.tfvars -reconfigure -no-color
+        working-directory: ./terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var-file=environment/${{ matrix.environment }}.tfvars -no-color
+        working-directory: ./terraform
