@@ -74,7 +74,7 @@ HTTP to HTTPS redirect.
 Pull requests only run the checks and the plan. The jobs authenticate through
 GitHub OIDC with the role in the repository secret `AWS_ROLE_ARN_POC`; that role
 (and the account's GitHub OIDC provider) still has to be created in the account
-and must allow this repository's subjects. Jobs run on the org `self-hosted` runners.
+and must allow this repository's subjects. Jobs run on GitHub-hosted `ubuntu-latest` runners.
 
 ## Prerequisites
 
