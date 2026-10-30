@@ -1,7 +1,7 @@
 locals {
   module_name           = "tf-aws/elastic-cache"
   module_version        = file("${path.module}/RELEASE")
-  module_maintainer     = "Cloud Softway"
+  module_maintainer     = "Alventara"
   use_replication_group = var.engine == "redis" && var.create_replication_group
   cluster_cache_nodes   = var.engine == "redis" ? 1 : var.num_cache_nodes
   default_tags = {

@@ -1,7 +1,7 @@
 locals {
   module_name                     = "tf-aws/cloudfront"
   module_version                  = file("${path.module}/RELEASE")
-  module_maintainer               = "Cloud Softway"
+  module_maintainer               = "Alventara"
   origin_request_policy_index_map = { for idx, name in var.managed_origin_request_policy_names : name => idx }
   default_tags = {
     ModuleName       = local.module_name

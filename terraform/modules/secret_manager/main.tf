@@ -1,7 +1,7 @@
 locals {
   module_name       = "zammit-infra/secret_manager"
   module_version    = file("${path.module}/RELEASE")
-  module_maintainer = "Cloud Softway"
+  module_maintainer = "Alventara"
   default_tags = {
     ModuleName    = local.module_name
     ModuleVersion = local.module_version

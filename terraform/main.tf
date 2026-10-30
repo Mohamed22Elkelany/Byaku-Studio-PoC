@@ -1,7 +1,7 @@
 locals {
   default_tags = {
     aws-apn-id   = "pc:2yqdbavm3n3awa2b98r83k3bd"
-    MaintainedBy = "Cloud Softway"
+    MaintainedBy = "Alventara"
     CreatedBy    = "Terraform"
     Environment  = var.environment
     Project      = var.project
