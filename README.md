@@ -21,7 +21,7 @@ terraform/
 | Networking | VPC 10.0.0.0/16, 2 public + 5 private subnets (`app` tier in 2 AZs, `data` tier in 3 AZs), IGW, one shared NAT gateway, flow logs, S3 gateway endpoint | `vpc.tf`, `vpc_endpoints.tf` |
 | Edge | Internet-facing ALB with host-based routing, regional WAF attached to the ALB, wildcard ACM certificate `*.byaku-studio.com` | `alb.tf`, `waf.tf`, `acm.tf` |
 | Containers | ECS cluster `byaku-poc-cluster` with 5 services (web, admin-web, backend, ai, integrations), 8 task families incl. migrations and release smoke, per-service IAM/log groups/security groups, `byaku.internal` service discovery; 7 ECR repositories `byaku-poc/<service>`; 8 Secrets Manager containers `byaku-poc/<secret>` | `ecs.tf`, `ecs_tasks.tf`, `ecs_iam.tf`, `ecr.tf`, `secrets.tf`, `kms.tf` |
-| Data | RDS PostgreSQL 16 `byaku-poc-core` (database `byaku`) and `byaku-poc-admin` (database `byaku_admin`), db.t4g.small Single-AZ, 20 GiB gp3 (autoscaling to 100 GiB), created empty, RDS-managed master passwords | `rds.tf` |
+| Data | RDS PostgreSQL 16 `byaku-poc-core` (database `byaku`) and `byaku-poc-admin` (database `byaku_admin`), db.m8g.large Multi-AZ (Barmous production sizing), 100 GiB gp3 (autoscaling to 200 GiB), 14-day backups, created empty, RDS-managed master passwords | `rds.tf` |
 | Baseline | CloudTrail (multi-region account trail), GuardDuty, AWS Config, Security Hub, CloudWatch alarms + SNS alerting, Budgets | `cloudtrail.tf`, `guard_duty.tf`, `aws_config.tf`, `security_hub.tf`, `cloudwatch.tf`, `sns.tf`, `budgets.tf` |
 
 All resources carry the default tags from `main.tf`, including the partner tag

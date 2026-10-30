@@ -151,7 +151,7 @@ guardduty_enabled = true
 budgets = {
   overall = {
     name         = "overall-monthly"
-    limit_amount = 400
+    limit_amount = 1200
     notifications = {
       actual     = { comparison_operator = "GREATER_THAN", threshold = 80, threshold_type = "PERCENTAGE", notification_type = "ACTUAL" }
       forecasted = { comparison_operator = "GREATER_THAN", threshold = 100, threshold_type = "PERCENTAGE", notification_type = "FORECASTED" }
@@ -170,7 +170,7 @@ budgets = {
 
   rds = {
     name         = "rds-monthly"
-    limit_amount = 100
+    limit_amount = 900
     cost_filters = [{ name = "Service", values = ["Amazon Relational Database Service"] }]
     notifications = {
       actual     = { comparison_operator = "GREATER_THAN", threshold = 85, threshold_type = "PERCENTAGE", notification_type = "ACTUAL" }
@@ -226,20 +226,21 @@ app_log_retention_in_days = 30
 #####################################################
 # Core ("byaku") and admin ("byaku_admin") PostgreSQL stores, created empty
 # (no snapshot restore). Master passwords are RDS-managed in Secrets Manager.
-# PoC sizing: Single-AZ db.t4g.small, 20 GiB gp3 (baseline 3000 IOPS / 125 MiB/s)
-# growing up to 100 GiB.
+# Sized like the Barmous production databases: db.m8g.large Multi-AZ, 100 GiB gp3
+# growing up to 200 GiB, 14-day backups. Below 400 GiB, PostgreSQL gp3 runs at the
+# fixed 3000 IOPS / 125 MiB/s baseline, so IOPS and throughput are not set.
 db_instances = {
   core = {
     db_name                         = "byaku"
     db_username                     = "byaku_app"
     engine_version                  = "16.13"
-    instance_class                  = "db.t4g.small"
-    allocated_storage               = 20
-    max_allocated_storage           = 100
+    instance_class                  = "db.m8g.large"
+    allocated_storage               = 100
+    max_allocated_storage           = 200
     apply_immediately               = true
-    multi_az                        = false
+    multi_az                        = true
     deletion_protection             = true
-    backup_retention_period         = 7
+    backup_retention_period         = 14
     backup_window                   = "01:00-02:00"
     maintenance_window              = "sun:02:30-sun:03:30"
     enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
@@ -250,13 +251,13 @@ db_instances = {
     db_name                         = "byaku_admin"
     db_username                     = "byaku_admin_app"
     engine_version                  = "16.13"
-    instance_class                  = "db.t4g.small"
-    allocated_storage               = 20
-    max_allocated_storage           = 100
+    instance_class                  = "db.m8g.large"
+    allocated_storage               = 100
+    max_allocated_storage           = 200
     apply_immediately               = true
-    multi_az                        = false
+    multi_az                        = true
     deletion_protection             = true
-    backup_retention_period         = 7
+    backup_retention_period         = 14
     backup_window                   = "01:00-02:00"
     maintenance_window              = "sun:02:30-sun:03:30"
     enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
