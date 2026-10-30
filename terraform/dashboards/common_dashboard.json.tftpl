@@ -1,0 +1,93 @@
+{
+    "widgets": [
+        {
+            "height": 1,
+            "width": 24,
+            "y": 0,
+            "x": 0,
+            "type": "text",
+            "properties": {
+                "markdown": "# CloudTrail"
+            }
+        },
+        {
+            "height": 6,
+            "width": 24,
+            "y": 7,
+            "x": 0,
+            "type": "log",
+            "properties": {
+                "query": "SOURCE '${CloudTrail_log_group_name}' | fields @timestamp, awsRegion, userIdentity.userName, eventName, eventSource\r\n| filter ispresent(userIdentity.userName)\r\n| sort @timestamp desc\r\n",
+                "region": "${region}",
+                "stacked": false,
+                "title": "Users Actions",
+                "view": "table"
+            }
+        },
+        {
+            "height": 6,
+            "width": 8,
+            "y": 1,
+            "x": 0,
+            "type": "log",
+            "properties": {
+                "query": "SOURCE '${CloudTrail_log_group_name}' | fields @timestamp, awsRegion, userIdentity.userName, eventName, eventSource\r\n| filter ispresent(userIdentity.userName)\r\n| sort @timestamp desc\r\n| stats count() by userIdentity.userName",
+                "region": "${region}",
+                "stacked": false,
+                "title": "Users Identity Count",
+                "view": "pie"
+            }
+        },
+        {
+            "height": 6,
+            "width": 8,
+            "y": 1,
+            "x": 8,
+            "type": "log",
+            "properties": {
+                "query": "SOURCE '${CloudTrail_log_group_name}' | fields eventTime, userIdentity.userName as userName,eventName as eventName, awsRegion as Region, eventSource, sourceIPAddress, userAgent\r\n| filter eventName == \"CreateAccessKey\"\r\n| sort @timestamp desc\r\n",
+                "region": "${region}",
+                "stacked": false,
+                "title": "Create AccessKeys",
+                "view": "table"
+            }
+        },
+        {
+            "height": 6,
+            "width": 8,
+            "y": 1,
+            "x": 16,
+            "type": "log",
+            "properties": {
+                "query": "SOURCE '${CloudTrail_log_group_name}' | fields eventTime, userIdentity.userName as userName,eventName as eventName, awsRegion as Region, eventSource, sourceIPAddress, userAgent\r\n| filter eventName == \"CreateUser\"\r\n| sort @timestamp desc\r\n",
+                "region": "${region}",
+                "stacked": false,
+                "title": "Create Users",
+                "view": "table"
+            }
+        },
+        {
+            "type": "log",
+            "x": 0,
+            "y": 14,
+            "width": 24,
+            "height": 6,
+            "properties": {
+                "query": "SOURCE '${flow_logs_log_group_name}' | fields @timestamp, @message, @logStream, @log\n| sort @timestamp desc\n| limit 10000",
+                "region": "${region}",
+                "stacked": false,
+                "view": "table"
+            }
+        },
+        {
+            "height": 1,
+            "width": 24,
+            "y": 13,
+            "x": 0,
+            "type": "text",
+            "properties": {
+                "markdown": "# VPC_Flow_Logs"
+            }
+        }
+    ]
+}
