@@ -7,12 +7,14 @@ on:
     paths:
       - "terraform/**"
       - ".github/workflows/infra-cicd.yml"
+      - ".github/scripts/**"
   pull_request:
     branches:
       - main
     paths:
       - "terraform/**"
       - ".github/workflows/infra-cicd.yml"
+      - ".github/scripts/**"
   workflow_dispatch:
     inputs:
       action:
@@ -175,6 +177,9 @@ jobs:
             jq -e 'all(.resource_changes[]?; all(.change.actions[]; . == "no-op" or . == "read" or . == "update"))' .terraform/prepare.json
             terraform apply -no-color .terraform/prepare.tfplan
           fi
+
+      - name: Empty managed log buckets in small batches
+        run: python ../.github/scripts/empty-managed-log-buckets.py .terraform/pre-destroy.tfstate
 
       - name: Plan destruction
         run: |

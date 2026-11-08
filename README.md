@@ -77,6 +77,8 @@ Manual runs default to `plan`. All runs share a concurrency group to prevent
 overlapping deploys and teardown. The destroy job checks account `711695043680`,
 prepares only existing resources (rejecting creates/deletes during preparation),
 then applies a saved destroy plan and requires an empty managed state.
+It stops state-owned log writers and empties the two managed log buckets in
+small AWS CLI batches to avoid large version-list responses in the provider.
 Teardown disables RDS deletion protection, skips final database snapshots, deletes
 ECR images and application secrets, and schedules KMS keys for deletion after the
 AWS minimum of seven days. It permanently removes database data and log buckets.
