@@ -69,7 +69,26 @@ HTTP to HTTPS redirect.
 
 1. `static_code_checks`: `terraform fmt -check` and `terraform validate` (no AWS access).
 2. `plan`: plans `poc` and uploads the plan as an artifact (`terraform-plan-poc`).
-3. `apply`: runs on push to `main` (or a manual run on `main`).
+3. `apply`: runs on push to `main` or a manual run with `action=apply` on `main`.
+4. `destroy`: manual only on `main`, with `action=destroy` and
+   `confirmation=destroy-byaku-poc-711695043680`. The deploy jobs are skipped.
+
+Manual runs default to `plan`. All runs share a concurrency group to prevent
+overlapping deploys and teardown. The destroy job checks account `711695043680`,
+prepares only existing resources (rejecting creates/deletes during preparation),
+then applies a saved destroy plan and requires an empty managed state.
+Teardown disables RDS deletion protection, skips final database snapshots, deletes
+ECR images and application secrets, and schedules KMS keys for deletion after the
+AWS minimum of seven days. It permanently removes database data and log buckets.
+The versioned Terraform backend bucket and GitHub OIDC bootstrap are provisioned
+outside this state and remain available for audit and reruns.
+
+```bash
+gh workflow run infra-cicd.yml --ref main -f action=destroy \
+  -f confirmation=destroy-byaku-poc-711695043680
+gh run list --workflow infra-cicd.yml
+gh run watch <run-id> --exit-status
+```
 
 Pull requests only run the checks and the plan. The jobs authenticate through
 GitHub OIDC with the role in the repository secret `AWS_ROLE_ARN_POC`; that role

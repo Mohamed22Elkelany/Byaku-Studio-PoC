@@ -14,6 +14,22 @@ on:
       - "terraform/**"
       - ".github/workflows/infra-cicd.yml"
   workflow_dispatch:
+    inputs:
+      action:
+        description: Infrastructure action
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+        default: plan
+      confirmation:
+        description: For destroy, enter destroy-byaku-poc-711695043680
+        type: string
+
+concurrency:
+  group: byaku-poc-infrastructure
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -47,6 +63,7 @@ jobs:
         working-directory: ./terraform
 
   plan:
+    if: inputs.action != 'destroy'
     needs: [static_code_checks]
     runs-on: ubuntu-latest
     strategy:
@@ -84,7 +101,7 @@ jobs:
 
   apply:
     needs: [plan]
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply'))
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
@@ -110,3 +127,66 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve -var-file=environment/${{ matrix.environment }}.tfvars -no-color
         working-directory: ./terraform
+
+  destroy:
+    needs: [static_code_checks]
+    if: github.event_name == 'workflow_dispatch' && inputs.action == 'destroy' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: ./terraform
+    steps:
+      - name: Check destructive confirmation
+        working-directory: .
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: test "$CONFIRMATION" = 'destroy-byaku-poc-711695043680'
+
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_POC }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: '711695043680'
+
+      - name: Verify target account
+        run: test "$(aws sts get-caller-identity --query Account --output text)" = '711695043680'
+
+      - name: Terraform Init
+        run: terraform init -backend-config=backend/poc.tfvars -reconfigure -no-color
+
+      - name: Prepare existing resources for deletion
+        run: |
+          set -euo pipefail
+          terraform state pull > .terraform/pre-destroy.tfstate
+          mapfile -t targets < <(terraform state list | grep -E '(aws_db_instance\.this$|aws_ecr_repository\.this\[|aws_secretsmanager_secret\.app\[|^aws_kms_key\.)' || true)
+          if [ "${#targets[@]}" -gt 0 ]; then
+            args=()
+            for target in "${targets[@]}"; do args+=("-target=$target"); done
+            terraform plan "${args[@]}" -var-file=environment/poc.tfvars -var=teardown_mode=true -out=.terraform/prepare.tfplan -no-color
+            terraform show -json .terraform/prepare.tfplan > .terraform/prepare.json
+            # Preparation may update existing objects, but must never create or delete any.
+            jq -e 'all(.resource_changes[]?; all(.change.actions[]; . == "no-op" or . == "read" or . == "update"))' .terraform/prepare.json
+            terraform apply -no-color .terraform/prepare.tfplan
+          fi
+
+      - name: Plan destruction
+        run: |
+          terraform plan -destroy -var-file=environment/poc.tfvars -var=teardown_mode=true -out=.terraform/destroy.tfplan -no-color
+          terraform show -json .terraform/destroy.tfplan > .terraform/destroy.json
+          jq -e 'all(.resource_changes[]?; all(.change.actions[]; . == "no-op" or . == "read" or . == "delete"))' .terraform/destroy.json
+
+      - name: Destroy infrastructure
+        run: terraform apply -no-color .terraform/destroy.tfplan
+
+      - name: Verify empty Terraform state
+        run: |
+          terraform state pull > .terraform/post-destroy.tfstate
+          jq -e '[.resources[]? | select(.mode == "managed") | .instances[]?] | length == 0' .terraform/post-destroy.tfstate
+          echo 'Terraform-managed infrastructure removed. KMS keys await AWS mandatory deletion; backend bucket and OIDC bootstrap remain outside Terraform.' >> "$GITHUB_STEP_SUMMARY"

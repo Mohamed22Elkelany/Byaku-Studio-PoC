@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "kms_secrets" {
 resource "aws_kms_key" "secrets" {
   description             = "${local.name} application secrets"
   enable_key_rotation     = true
-  deletion_window_in_days = 30
+  deletion_window_in_days = var.teardown_mode ? 7 : 30
   policy                  = data.aws_iam_policy_document.kms_secrets.json
 }
 
@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "kms_logs" {
 resource "aws_kms_key" "logs" {
   description             = "${local.name} application log groups"
   enable_key_rotation     = true
-  deletion_window_in_days = 30
+  deletion_window_in_days = var.teardown_mode ? 7 : 30
   policy                  = data.aws_iam_policy_document.kms_logs.json
 }
 

@@ -21,7 +21,7 @@ resource "aws_secretsmanager_secret" "app" {
   name                    = "${local.name}/${each.value}"
   description             = "Byaku ${var.environment_name} ${each.value} (value managed outside Terraform)"
   kms_key_id              = aws_kms_key.secrets.arn
-  recovery_window_in_days = 7
+  recovery_window_in_days = var.teardown_mode ? 0 : 7
 
   tags = merge(local.default_tags, var.tags)
 }

@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "kms_database" {
 resource "aws_kms_key" "database" {
   description             = "${local.name} RDS storage and snapshots"
   enable_key_rotation     = true
-  deletion_window_in_days = 30
+  deletion_window_in_days = var.teardown_mode ? 7 : 30
   policy                  = data.aws_iam_policy_document.kms_database.json
 }
 
@@ -79,8 +79,8 @@ module "rds" {
   backup_retention_period   = each.value.backup_retention_period
   backup_window             = each.value.backup_window
   copy_tags_to_snapshot     = each.value.copy_tags_to_snapshot
-  delete_automated_backups  = each.value.delete_automated_backups
-  skip_final_snapshot       = each.value.skip_final_snapshot
+  delete_automated_backups  = var.teardown_mode || each.value.delete_automated_backups
+  skip_final_snapshot       = var.teardown_mode || each.value.skip_final_snapshot
   final_snapshot_identifier = "${coalesce(each.value.db_identifier, "${local.name}-${each.key}")}-final"
 
   # Network Configuration: private "data" tier subnets.
@@ -101,7 +101,7 @@ module "rds" {
   egress_rules = []
 
   # Protection
-  deletion_protection = each.value.deletion_protection
+  deletion_protection = var.teardown_mode ? false : each.value.deletion_protection
 
   # IAM and Security
   iam_database_authentication_enabled = false

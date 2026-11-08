@@ -1,6 +1,12 @@
 ###########################################
 ##            General Variables          ##
 ###########################################
+variable "teardown_mode" {
+  description = "Destructive teardown only: disable RDS protection, skip final snapshots, purge ECR/secrets and schedule KMS deletion."
+  type        = bool
+  default     = false
+}
+
 variable "aws_profile" {
   description = "Optional AWS shared credentials profile for local Terraform runs. CI uses OIDC environment credentials."
   type        = string

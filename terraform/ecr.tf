@@ -7,6 +7,7 @@ module "ecr" {
   source = "./modules/ecr"
 
   enabled              = true
+  force_delete         = var.teardown_mode
   repository_name      = "${local.name}/${each.value}"
   image_tag_mutability = var.ecr.image_tag_mutability
   image_scanning       = var.ecr.image_scanning

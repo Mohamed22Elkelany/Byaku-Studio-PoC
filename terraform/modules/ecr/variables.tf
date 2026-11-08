@@ -49,3 +49,9 @@ variable "lifecycle_policy" {
   type        = string
   default     = null
 }
+
+variable "force_delete" {
+  description = "Delete the repository even when it contains images during an explicit teardown."
+  type        = bool
+  default     = false
+}
